@@ -55,12 +55,9 @@ public class XmlChangeSetReader implements ChangeSetReader {
         List<ChangeSet> changeSets = new ArrayList<ChangeSet>();
 
         try {
-            logger.info("Parsing XML Change Set File {}", file.getFilename());
-            ChangeSetList changeFileSet = (ChangeSetList) digester.parse(file.getInputStream());
-            if (changeFileSet == null) {
-                logger.warn("Ignoring change file {}, the parser returned null. Please check your formatting.", file.getFilename());
-            }
-            else {
+            synchronized (XmlChangeSetReader.this) { // thread-safe http://xerces.apache.org/xerces2-j/faq-dom.html
+                // prevents org.xml.sax.SAXException: FWK005 parse may not be called while parsing.
+                ChangeSetList changeFileSet = (ChangeSetList) digester.parse(file.getInputStream());
                 for (ChangeSet changeSet : changeFileSet.getList()) {
                     ChangeSetReaderUtil.populateChangeSetResourceInfo(changeSet, file);
                 }
