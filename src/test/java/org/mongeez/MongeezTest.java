@@ -40,8 +40,7 @@ public class MongeezTest {
     private Mongeez create(String path) {
         Mongeez mongeez = new Mongeez();
         mongeez.setFile(new ClassPathResource(path));
-        mongeez.setMongo(mongo);
-        mongeez.setDbName(dbName);
+        mongeez.setDB(db);
         return mongeez;
     }
 

@@ -20,7 +20,7 @@ import org.mongeez.reader.FilesetXMLChangeSetFileProvider;
 import org.mongeez.validation.ChangeSetsValidator;
 import org.mongeez.validation.DefaultChangeSetsValidator;
 
-import com.mongodb.Mongo;
+import com.mongodb.DB;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,16 +33,14 @@ import java.util.List;
 public class Mongeez {
     private final static Logger logger = LoggerFactory.getLogger(Mongeez.class);
 
-    private Mongo mongo = null;
-    private String dbName;
-    private MongoAuth auth = null;
+    private DB db = null;
     private ChangeSetFileProvider changeSetFileProvider = null;
     private ChangeSetsValidator changeSetsValidator = new DefaultChangeSetsValidator();
     private String context = null;
 
     public void process() {
         List<ChangeSet> changeSets = getChangeSets();
-        new ChangeSetExecutor(mongo, dbName, context, auth).execute(changeSets);
+        new ChangeSetExecutor(db,context).execute(changeSets);
     }
 
     private List<ChangeSet> getChangeSets() {
@@ -75,16 +73,8 @@ public class Mongeez {
         }
     }
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
-    }
-
-    public void setAuth(MongoAuth auth) {
-        this.auth = auth;
+    public void setDB(DB db) {
+        this.db = db;
     }
 
     public void setChangeSetsValidator(ChangeSetsValidator changeSetsValidator) {

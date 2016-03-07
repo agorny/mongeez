@@ -11,15 +11,12 @@
  */
 package org.mongeez;
 
-import com.mongodb.Mongo;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.Resource;
-
+import com.mongodb.DB;
 import org.mongeez.reader.ChangeSetFileProvider;
 import org.mongeez.validation.ChangeSetsValidator;
 import org.mongeez.validation.DefaultChangeSetsValidator;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.Resource;
 
 /**
  * @author oleksii
@@ -27,14 +24,10 @@ import org.mongeez.validation.DefaultChangeSetsValidator;
  */
 public class MongeezRunner implements InitializingBean {
     private boolean executeEnabled = false;
-    private Mongo mongo;
-    private String dbName;
+    private DB db;
     private Resource file;
-
-    private String userName;
-    private String passWord;
     private String authDb;
-    
+
     private ChangeSetFileProvider changeSetFileProvider;
 
     private ChangeSetsValidator changeSetsValidator;
@@ -48,25 +41,19 @@ public class MongeezRunner implements InitializingBean {
 
     public void execute() {
         Mongeez mongeez = new Mongeez();
-        mongeez.setMongo(mongo);
-        mongeez.setDbName(dbName);
-        
-        if(changeSetsValidator != null) {
+        mongeez.setDB(db);
+
+
+        if (changeSetsValidator != null) {
             mongeez.setChangeSetsValidator(changeSetsValidator);
-        }
-        else {
+        } else {
             mongeez.setChangeSetsValidator(new DefaultChangeSetsValidator());
         }
-        
+
         if (changeSetFileProvider != null) {
             mongeez.setChangeSetFileProvider(changeSetFileProvider);
         } else {
             mongeez.setFile(file);
-
-            if(!StringUtils.isEmpty(userName) && !StringUtils.isEmpty(passWord)){
-            	MongoAuth auth = new MongoAuth(userName, passWord, authDb);
-                mongeez.setAuth(auth);
-            }
         }
 
         mongeez.process();
@@ -80,12 +67,8 @@ public class MongeezRunner implements InitializingBean {
         this.executeEnabled = executeEnabled;
     }
 
-    public void setMongo(Mongo mongo) {
-        this.mongo = mongo;
-    }
-
-    public void setDbName(String dbName) {
-        this.dbName = dbName;
+    public void setDB(DB db) {
+        this.db = db;
     }
 
     public void setFile(Resource file) {
@@ -95,18 +78,6 @@ public class MongeezRunner implements InitializingBean {
     public void setChangeSetFileProvider(ChangeSetFileProvider changeSetFileProvider) {
         this.changeSetFileProvider = changeSetFileProvider;
     }
-
-    public String getDbName() {
-        return dbName;
-    }
-
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
-
-	public void setPassWord(String passWord) {
-		this.passWord = passWord;
-	}
 
     public void setAuthDb(String authDb) {
         this.authDb = authDb;
